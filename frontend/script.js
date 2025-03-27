@@ -7,6 +7,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const responseText = document.getElementById("responseText");
   const closeBtn = document.querySelector(".close-btn");
 
+  // API Gateway endpoint - Replace with your actual API endpoint from Terraform output
+  const API_ENDPOINT =
+    "https://hmcr06sxvj.execute-api.us-east-1.amazonaws.com/v1/submit";
+
   // Form submission handler
   form.addEventListener("submit", function (event) {
     // Prevent the default form submission
@@ -17,9 +21,8 @@ document.addEventListener("DOMContentLoaded", function () {
       return false;
     }
 
-    // In a real implementation, you would send the form data to your API Gateway here
-    // For the demo, we'll simulate a successful submission
-    simulateFormSubmission();
+    // Submit form data to API
+    submitFormToAPI();
   });
 
   // Close button for response message
@@ -100,50 +103,66 @@ document.addEventListener("DOMContentLoaded", function () {
     return emailRegex.test(email);
   }
 
-  // Simulate form submission (in a real app, this would be an API call)
-  function simulateFormSubmission() {
+  // Function to submit form data to API
+  function submitFormToAPI() {
     // Disable submit button and show loading state
     const submitBtn = document.getElementById("submitBtn");
     const originalBtnText = submitBtn.innerText;
     submitBtn.disabled = true;
     submitBtn.innerText = "Submitting...";
 
-    // Simulate network delay
-    setTimeout(function () {
-      // Get form data for demonstration purposes
-      const formData = new FormData(form);
-      const formObject = {};
+    // Collect form data
+    const formData = {
+      name: document.getElementById("name").value,
+      email: document.getElementById("email").value,
+      phone: document.getElementById("phone").value,
+      destination: document.getElementById("destination").value,
+      travelDateStart: document.getElementById("travelDateStart").value,
+      travelDateEnd: document.getElementById("travelDateEnd").value,
+      travelers: document.getElementById("travelers").value,
+      message: document.getElementById("message").value,
+    };
 
-      formData.forEach(function (value, key) {
-        formObject[key] = value;
+    // Send the data to the API
+    fetch(API_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // Show success message
+        responseMessage.classList.remove("hidden");
+        responseMessage.querySelector(".response-content").className =
+          "response-content success";
+        responseTitle.innerText = "Thank You!";
+        responseText.innerText = `Thank you, ${formData.name}! Your travel inquiry has been submitted successfully with reference number: ${data.submissionId}. We'll contact you shortly at ${formData.email}.`;
+
+        // Reset form
+        form.reset();
+      })
+      .catch((error) => {
+        // Show error message
+        responseMessage.classList.remove("hidden");
+        responseMessage.querySelector(".response-content").className =
+          "response-content error";
+        responseTitle.innerText = "Submission Error";
+        responseText.innerText =
+          "We encountered an error while submitting your inquiry. Please try again later or contact us directly.";
+
+        console.error("Error submitting form:", error);
+      })
+      .finally(() => {
+        // Reset button state
+        submitBtn.disabled = false;
+        submitBtn.innerText = originalBtnText;
       });
-
-      // For demo purposes only - log the data that would be sent
-      console.log("Form data that would be sent to API:", formObject);
-
-      // Show success message
-      responseMessage.classList.remove("hidden");
-      responseMessage.querySelector(".response-content").className =
-        "response-content success";
-      responseTitle.innerText = "Thank You!";
-      responseText.innerText = `Thank you, ${formObject.name}! Your travel inquiry has been submitted successfully. We'll contact you shortly at ${formObject.email}.`;
-
-      // Reset form
-      form.reset();
-
-      // Reset button state
-      submitBtn.disabled = false;
-      submitBtn.innerText = originalBtnText;
-    }, 1500);
   }
-
-  // Handle error scenarios (for demo purposes)
-  window.simulateError = function () {
-    responseMessage.classList.remove("hidden");
-    responseMessage.querySelector(".response-content").className =
-      "response-content error";
-    responseTitle.innerText = "Submission Error";
-    responseText.innerText =
-      "We encountered an error while submitting your inquiry. Please try again later or contact us directly.";
-  };
 });
