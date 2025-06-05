@@ -7,9 +7,17 @@ document.addEventListener("DOMContentLoaded", function () {
   const responseText = document.getElementById("responseText");
   const closeBtn = document.querySelector(".close-btn");
 
-  // API Gateway endpoint - Replace with your actual API endpoint from Terraform output
-  const API_ENDPOINT =
-    "https://hmcr06sxvj.execute-api.us-east-1.amazonaws.com/v1/submit";
+  // API Gateway endpoint - This should be set via environment variable or build process
+  // For local development, you can temporarily set this to your API Gateway URL
+  // In production, this should be injected during the build/deployment process
+  const API_ENDPOINT = window.API_ENDPOINT || "your-api-gateway-endpoint-here";
+
+  // Check if API endpoint is configured
+  if (API_ENDPOINT === "your-api-gateway-endpoint-here") {
+    console.warn(
+      "API_ENDPOINT not configured. Please set the API Gateway URL."
+    );
+  }
 
   // Form submission handler
   form.addEventListener("submit", function (event) {

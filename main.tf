@@ -98,6 +98,16 @@ resource "aws_s3_object" "js_file" {
   etag         = filemd5("${path.module}/frontend/script.js")
 }
 
+# Upload configuration file (only if it exists)
+resource "aws_s3_object" "config_file" {
+  count        = fileexists("${path.module}/frontend/config.js") ? 1 : 0
+  bucket       = aws_s3_bucket.website_bucket.id
+  key          = "config.js"
+  source       = "${path.module}/frontend/config.js"
+  content_type = "application/javascript"
+  etag         = filemd5("${path.module}/frontend/config.js")
+}
+
 # Optional: Create a CloudFront distribution for CDN and HTTPS
 resource "aws_cloudfront_distribution" "website_distribution" {
   count = var.create_cloudfront ? 1 : 0

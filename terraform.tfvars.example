@@ -1,0 +1,10 @@
+aws_region = "us-east-1"
+bucket_name = "your-unique-bucket-name" # Replace with a globally unique name
+create_cloudfront = false
+
+# Backend configuration
+dynamodb_table_name = "your-contact-form-submissions-table"
+environment = "dev"
+from_email_address = "your-verified-email@yourdomain.com"  # Must be verified in SES
+to_email_address = "your-business-email@yourdomain.com"    # Must be verified in SES in sandbox mode
+api_stage_name = "v1" 

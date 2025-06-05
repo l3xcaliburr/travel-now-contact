@@ -51,3 +51,37 @@ Thumbs.db
 
 # Dependency directories
 node_modules/
+
+# blog
+blog.md
+
+# Terraform sensitive files
+terraform.tfvars
+*.tfvars
+!terraform.tfvars.example
+
+# Terraform state files (contain sensitive information)
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate
+*.tfstate.*
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# AWS credentials
+.aws/
+aws-credentials.json
+
+# Generated configuration files
+frontend/config.js
+
+# Backup files
+*.backup
+*.bak
+
+# OS generated files
+.DS_Store
+Thumbs.db
